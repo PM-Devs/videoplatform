@@ -10,5 +10,4 @@ router.register(r'app-credentials', AppCredentialViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('app-credentials/create/', AppCredentialViewSet.as_view({'post': 'create_app_credentials'}), name='create-app-credentials'),
 ]

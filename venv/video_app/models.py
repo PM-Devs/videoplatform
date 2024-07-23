@@ -48,7 +48,7 @@ class Video(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class AppCredential(models.Model):
-    app_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    app_secret = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    app_id = models.CharField(max_length=30, unique=True)  # Changed from UUIDField to CharField
+    app_secret = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

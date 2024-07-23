@@ -1,4 +1,3 @@
-# views.py
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -89,12 +88,13 @@ class VideoViewSet(viewsets.ModelViewSet):
 class AppCredentialViewSet(viewsets.ModelViewSet):
     queryset = AppCredential.objects.all()
     serializer_class = AppCredentialSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [AppCredentialAuthentication, JWTAuthentication]
 
-    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny], authentication_classes=[])
-    def create_app_credentials(self, request):
-        app_credential = AppCredential()
-        app_credential.save()
-        serializer = self.get_serializer(app_credential)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def get_permissions(self):
+        if self.action == 'create':
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
+    def perform_create(self, serializer):
+        app_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=30))
+        app_secret = ''.join(random.choices(string.ascii_lowercase + string.digits, k=50))
+        serializer.save(app_id=app_id, app_secret=app_secret)

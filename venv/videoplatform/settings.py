@@ -96,3 +96,5 @@ DEFAULT_FROM_EMAIL = 'your_email@example.com'
 AUTH_USER_MODEL = 'video_app.User'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# settings.py
+APPEND_SLASH = False

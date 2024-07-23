@@ -1,3 +1,4 @@
+# urls.py
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import UserViewSet, VideoViewSet, AppCredentialViewSet
@@ -9,4 +10,5 @@ router.register(r'app-credentials', AppCredentialViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('app-credentials/create/', AppCredentialViewSet.as_view({'post': 'create_app_credentials'}), name='create-app-credentials'),
 ]

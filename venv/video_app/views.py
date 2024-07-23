@@ -1,3 +1,4 @@
+# views.py
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -73,8 +74,14 @@ class UserViewSet(viewsets.ModelViewSet):
 class VideoViewSet(viewsets.ModelViewSet):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
-    permission_classes = [IsAdminUser]
     authentication_classes = [AppCredentialAuthentication, JWTAuthentication]
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            self.permission_classes = [IsAdminUser]
+        else:
+            self.permission_classes = [permissions.AllowAny]
+        return super().get_permissions()
 
     def perform_create(self, serializer):
         serializer.save(uploaded_by=self.request.user)
@@ -82,4 +89,12 @@ class VideoViewSet(viewsets.ModelViewSet):
 class AppCredentialViewSet(viewsets.ModelViewSet):
     queryset = AppCredential.objects.all()
     serializer_class = AppCredentialSerializer
-    
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [AppCredentialAuthentication, JWTAuthentication]
+
+    @action(detail=False, methods=['post'], permission_classes=[permissions.AllowAny], authentication_classes=[])
+    def create_app_credentials(self, request):
+        app_credential = AppCredential()
+        app_credential.save()
+        serializer = self.get_serializer(app_credential)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

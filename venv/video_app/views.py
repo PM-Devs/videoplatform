@@ -10,12 +10,12 @@ import string
 import jwt
 from datetime import datetime, timedelta
 from .authentication import AppCredentialAuthentication, JWTAuthentication
-from .permissions import IsAdminUser
+from .permissions import IsAdminUser, HasAppCredentials
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.AllowAny, HasAppCredentials]
 
     @action(detail=False, methods=['post'])
     def register(self, request):
@@ -74,12 +74,13 @@ class VideoViewSet(viewsets.ModelViewSet):
     queryset = Video.objects.all()
     serializer_class = VideoSerializer
     authentication_classes = [AppCredentialAuthentication, JWTAuthentication]
+    permission_classes = [HasAppCredentials]
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             self.permission_classes = [IsAdminUser]
         else:
-            self.permission_classes = [permissions.AllowAny]
+            self.permission_classes = [permissions.AllowAny, HasAppCredentials]
         return super().get_permissions()
 
     def perform_create(self, serializer):
